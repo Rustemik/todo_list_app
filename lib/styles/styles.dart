@@ -6,7 +6,7 @@ const TextStyle appBarTitleStyle = TextStyle(
   fontStyle: FontStyle.normal,
   fontWeight: FontWeight.w400,
   fontSize: 45.0,
-  color: appBarcolorText, 
+  color: appBarcolorText,
 );
 
 // const TextStyle appBarWHITETitleStyle = TextStyle(

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.green,
       ),
-      home: TodoScreen(),
+      home: const TodoScreen(),
     );
   }
 }
@@ -29,38 +29,59 @@ class TodoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                top: 30,
-                bottom: 20,
-              ),
-              child: Text(
-                "To Do List",
-                style: appBarTitleStyle,
-              ),
-            ),
-            //SizedBox(width: 18),
-            // Expanded(
-            //   child: Image.asset(
-            //     "assets/images/todo_list_logo.png",
-            //     fit: BoxFit.scaleDown, //height: size.height * 0.2,
-            //   ),
-            // ),
-          ],
+        title: const Text(
+          "To Do List",
+          style: appBarTitleStyle,
         ),
+        centerTitle: true,
         backgroundColor: appBarcolor,
         elevation: 0,
       ),
-      body: TodoList(),
+      body: const TodoList(),
+      floatingActionButton: Builder(
+        builder: (context) {
+          final todoListState =
+              context.findAncestorStateOfType<_TodoListState>();
+          return FloatingActionButton(
+            onPressed: () async {
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Вы уверены?'),
+                    content:
+                        const Text('Это действие удалит все задачи из списка.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).pop(false), // Отмена
+                        child: const Text('Отмена'),
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.of(context).pop(true), // Подтверждение
+                        child: const Text('Да'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (confirmed == true) {
+                todoListState?.clearAll();
+              }
+            },
+            tooltip: 'Clear all tasks',
+            backgroundColor: Colors.red,
+            child: const Icon(Icons.delete_sweep, color: Colors.white),
+          );
+        },
+      ),
     );
   }
 }
 
 class TodoList extends StatefulWidget {
-  TodoList({Key? key}) : super(key: key);
+  const TodoList({Key? key}) : super(key: key);
 
   @override
   State<TodoList> createState() => _TodoListState();
@@ -75,7 +96,8 @@ class Job {
 
 class _TodoListState extends State<TodoList> {
   final myController = TextEditingController();
-  final jobList = List<Job>.empty(growable: true);
+  final jobList = <Job>[];
+
   @override
   void dispose() {
     myController.dispose();
@@ -83,6 +105,7 @@ class _TodoListState extends State<TodoList> {
   }
 
   void add() {
+    if (myController.text.isEmpty) return; // Не добавлять пустые задачи
     setState(() {
       jobList.add(Job(name: myController.text));
     });
@@ -95,38 +118,43 @@ class _TodoListState extends State<TodoList> {
     });
   }
 
-  void done(Job job) {
+  void toggleDone(Job job) {
     setState(() {
-      job.done = true;
+      job.done = !job.done; // Переключение статуса (можно отменить)
+    });
+  }
+
+  void clearAll() {
+    setState(() {
+      jobList.clear();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height * 0.15,
-      decoration: BoxDecoration(
-        color: appBarcolor,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Row(
+    return Column(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          decoration: const BoxDecoration(
+            color: appBarcolor,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
                   child: TextField(
                     controller: myController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       border: OutlineInputBorder(
-                        borderRadius: const BorderRadius.all(
-                          const Radius.circular(10.0),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(30.0),
                         ),
                       ),
                       hintText: 'Enter new job',
@@ -135,92 +163,98 @@ class _TodoListState extends State<TodoList> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-                MaterialButton(
+                const SizedBox(width: 10), // Горизонтальный отступ
+                ElevatedButton(
                   onPressed: add,
-                  color: Colors.orange,
-                  textColor: Colors.white,
-                  child: Icon(
-                    Icons.add,
-                    size: 50,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(0),
                   ),
-                  padding: EdgeInsets.all(2),
-                  shape: CircleBorder(),
+                  child: const Icon(
+                    Icons.add,
+                    size: 45, // Уменьшил размер для баланса
+                  ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 5,
-            ),
-            Container(
-              child: SingleChildScrollView(
-                child: Column(
+          ),
+        ),
+        const SizedBox(height: 20),
+        Expanded(
+          child: Container(
+            color: Colors.white, // Белый фон для списка задач
+            child: ListView.builder(
+              itemCount: jobList.length,
+              itemBuilder: (context, index) {
+                final job = jobList[index];
+                return Column(
                   children: [
-                    for (var job in jobList) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            job.name,
-                            style: TextStyle(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () =>
+                                toggleDone(job), // Tap для переключения Done
+                            child: Text(
+                              job.name,
+                              style: TextStyle(
                                 fontSize: 20,
                                 decoration: job.done
                                     ? TextDecoration.lineThrough
-                                    : TextDecoration.none),
-                          ),
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(20, 0),
-                                  padding: EdgeInsets.zero,
-                                  shape: CircleBorder(),
-                                  primary: Colors.green,
-                                ),
-                                onPressed: job.done ? null : () => done(job),
-                                child: Icon(
-                                  Icons.check,
-                                  size: 25,
-                                  color: Colors.white,
-                                ),
-                                //Text(
-                                //   "Done",
-                                //   style: TextStyle(color: Colors.green),
-                                // ),
+                                    : TextDecoration.none,
                               ),
-                              OutlinedButton(
-                                style: OutlinedButton.styleFrom(
-                                  minimumSize: Size(20, 0),
-                                  padding: EdgeInsets.zero,
-                                  shape: CircleBorder(),
-                                  backgroundColor: Colors.red,
-                                ),
-                                onPressed: () => remove(job),
-                                child: Icon(
-                                  Icons.delete_forever,
-                                  size: 25,
-                                  color: Colors.white,
-                                ),
-                                //Text(
-                                //"Remove",
-                                //style: TextStyle(color: Colors.red),
-                                //),
-                              ),
-                            ],
+                            ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                    ],
+                        ),
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(40, 40),
+                                backgroundColor: Colors.green,
+                                shape: const CircleBorder(),
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed:
+                                  job.done ? null : () => toggleDone(job),
+                              child: const Icon(
+                                Icons.check,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(40, 40),
+                                backgroundColor: Colors.red,
+                                side: BorderSide
+                                    .none, // Убрать рамку для сплошного цвета
+                                shape: const CircleBorder(),
+                                padding: EdgeInsets.zero,
+                              ),
+                              onPressed: () => remove(job),
+                              child: const Icon(
+                                Icons.delete_forever,
+                                size: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
                   ],
-                ),
-              ),
+                );
+              },
             ),
-          ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
