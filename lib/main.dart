@@ -118,17 +118,6 @@ class _TodoListState extends State<TodoList> {
     });
   }
 
-  // void toggleDone(Job job) {
-  //   setState(() {
-  //     job.done = !job.done;
-  //     if (job.done) {
-  //       // Переместить выполненную задачу в конец списка
-  //       jobList.remove(job);
-  //       jobList.add(job);
-  //     }
-  //   });
-  // }
-
   void toggleDone(Job job) {
     setState(() {
       job.done = !job.done; // Переключение статуса (можно отменить)
@@ -183,14 +172,15 @@ class _TodoListState extends State<TodoList> {
                 ElevatedButton(
                   onPressed: add,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Color(0xff0fccb6), //Colors.orange
+                    foregroundColor: const Color.fromARGB(255, 161, 161, 161),
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(0),
                   ),
                   child: const Icon(
                     Icons.add,
-                    size: 45, // Уменьшил размер для баланса
+                    size: 50, // Уменьшил размер для баланса
+                    color: appBarcolor,
                   ),
                 ),
               ],
@@ -200,6 +190,7 @@ class _TodoListState extends State<TodoList> {
         const SizedBox(height: 20),
         Expanded(
           child: Container(
+            padding: EdgeInsets.all(10),
             color: Colors.white, // Белый фон для списка задач
             child: ListView.builder(
               itemCount: jobList.length,

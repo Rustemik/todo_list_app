@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-const Color appBarcolor = Color(0xFF382F42);
+const Color appBarcolor = Color(0xFF1e244d); //0xFF382F42
 const Color appBarcolorText = Color(0xFFF7F3F5);
 const Color colorWHITE = Color(0xFFFFFFFF);
 const Color cardBackground = Color(0xFFF5F5F5);
