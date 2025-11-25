@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:todo_list_app/screens/todo_screen.dart';
-=======
 import 'package:todo_list_app/styles/colors.dart';
 import 'package:todo_list_app/styles/styles.dart';
->>>>>>> 1.1
 
 void main() {
   runApp(const MyApp());
@@ -25,8 +21,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-<<<<<<< HEAD
-=======
 
 class TodoScreen extends StatefulWidget {
   const TodoScreen({Key? key}) : super(key: key);
@@ -264,4 +258,3 @@ class _TodoListState extends State<TodoList> {
     );
   }
 }
->>>>>>> 1.1
