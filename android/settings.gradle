@@ -14,10 +14,21 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
+
+    resolutionStrategy {
+    eachPlugin {
+        if (requested.id.id == 'com.android.application') {
+            useModule('com.android.tools.build:gradle:8.6.0')  // Было 8.1.4
+        }
+        if (requested.id.id == 'org.jetbrains.kotlin.android') {
+            useModule('org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0')  // Было 1.9.10
+        }
+        if (requested.id.id == 'dev.flutter.flutter-gradle-plugin') {
+            useModule('dev.flutter:flutter-gradle-plugin:1.0.0')  // Оставьте как есть
+        }
+    }
 }
 
-plugins {
-    id "dev.flutter.flutter-gradle-plugin" version "1.0.0" apply false
 }
 
 include ":app"

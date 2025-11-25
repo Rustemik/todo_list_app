@@ -22,8 +22,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class TodoScreen extends StatelessWidget {
+class TodoScreen extends StatefulWidget {
   const TodoScreen({Key? key}) : super(key: key);
+
+  @override
+  State<TodoScreen> createState() => _TodoScreenState();
+}
+
+class _TodoScreenState extends State<TodoScreen> {
+  final GlobalKey<_TodoListState> _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -37,44 +44,37 @@ class TodoScreen extends StatelessWidget {
         backgroundColor: appBarcolor,
         elevation: 0,
       ),
-      body: const TodoList(),
-      floatingActionButton: Builder(
-        builder: (context) {
-          final todoListState =
-              context.findAncestorStateOfType<_TodoListState>();
-          return FloatingActionButton(
-            onPressed: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Вы уверены?'),
-                    content:
-                        const Text('Это действие удалит все задачи из списка.'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.of(context).pop(false), // Отмена
-                        child: const Text('Отмена'),
-                      ),
-                      TextButton(
-                        onPressed: () =>
-                            Navigator.of(context).pop(true), // Подтверждение
-                        child: const Text('Да'),
-                      ),
-                    ],
-                  );
-                },
+      body: TodoList(key: _key),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final confirmed = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Вы уверены?'),
+                content:
+                    const Text('Это действие удалит все задачи из списка.'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false), // Отмена
+                    child: const Text('Отмена'),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        Navigator.of(context).pop(true), // Подтверждение
+                    child: const Text('Да'),
+                  ),
+                ],
               );
-              if (confirmed == true) {
-                todoListState?.clearAll();
-              }
             },
-            tooltip: 'Clear all tasks',
-            backgroundColor: Colors.red,
-            child: const Icon(Icons.delete_sweep, color: Colors.white),
           );
+          if (confirmed == true) {
+            _key.currentState?.clearAll();
+          }
         },
+        tooltip: 'Clear all tasks',
+        backgroundColor: const Color.fromARGB(255, 235, 130, 122),
+        child: const Icon(Icons.delete_sweep, color: Colors.white),
       ),
     );
   }

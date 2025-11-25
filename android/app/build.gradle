@@ -23,8 +23,8 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.todo_list"  // Замените на ваш package name, если отличается (из AndroidManifest.xml)
-    compileSdk 34  // Обновите до 34 для AGP 8.x
+    namespace "com.example.todo_list_app"  // Замените на ваш реальный package name из AndroidManifest.xml
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -36,8 +36,8 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.todo_list"  // Замените на ваш package name
-        minSdkVersion 21  // Минимальный для Flutter
+        applicationId "com.example.todo_list_app"  // Замените на ваш реальный package name
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -55,6 +55,5 @@ flutter {
 }
 
 dependencies {
-    // Здесь добавьте ваши зависимости, если есть (например, для Todo List)
-    // implementation 'androidx.core:core-ktx:1.12.0'  // Пример
+    // Добавьте ваши кастомные зависимости здесь, если есть (например, для функций Todo List)
 }
