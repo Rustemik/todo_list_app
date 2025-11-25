@@ -118,9 +118,25 @@ class _TodoListState extends State<TodoList> {
     });
   }
 
+  // void toggleDone(Job job) {
+  //   setState(() {
+  //     job.done = !job.done;
+  //     if (job.done) {
+  //       // Переместить выполненную задачу в конец списка
+  //       jobList.remove(job);
+  //       jobList.add(job);
+  //     }
+  //   });
+  // }
+
   void toggleDone(Job job) {
     setState(() {
       job.done = !job.done; // Переключение статуса (можно отменить)
+      if (job.done) {
+        // Переместить выполненную задачу в конец списка
+        jobList.remove(job);
+        jobList.add(job);
+      }
     });
   }
 
